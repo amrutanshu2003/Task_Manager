@@ -30,13 +30,27 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
+    accountPurgeAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
   }
 );
 
+taskSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+taskSchema.index({ accountPurgeAt: 1 }, { expireAfterSeconds: 0 });
+
 const Task = mongoose.model("Task", taskSchema);
 
 export default Task;
-

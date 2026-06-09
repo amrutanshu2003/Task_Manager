@@ -24,11 +24,25 @@ const userSchema = new mongoose.Schema(
       enum: ["dark", "light"],
       default: "dark",
     },
+    pendingDeletion: {
+      type: Boolean,
+      default: false,
+    },
+    deletionRequestedAt: {
+      type: Date,
+      default: null,
+    },
+    accountPurgeAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.index({ accountPurgeAt: 1 }, { expireAfterSeconds: 0 });
 
 const User = mongoose.model("User", userSchema);
 
