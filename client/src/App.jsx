@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard";
 
 const TOKEN_KEY = "task-manager-token";
 const USER_KEY = "task-manager-user";
+const THEME_KEY = "task-manager-theme";
 
 function App() {
   const [mode, setMode] = useState("login");
@@ -12,6 +13,17 @@ function App() {
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem(USER_KEY);
     return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [theme, setTheme] = useState(() => {
+    const savedUser = localStorage.getItem(USER_KEY);
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      if (parsedUser?.themePreference) {
+        return parsedUser.themePreference;
+      }
+    }
+
+    return localStorage.getItem(THEME_KEY) || "dark";
   });
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -25,6 +37,11 @@ function App() {
   }, [token]);
 
   useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
     if (!token) {
       setTasks([]);
       return;
@@ -32,8 +49,12 @@ function App() {
 
     const fetchTasks = async () => {
       try {
-        const { data } = await api.get("/tasks");
-        setTasks(data);
+        const [tasksResponse, profileResponse] = await Promise.all([
+          api.get("/tasks"),
+          api.get("/auth/me"),
+        ]);
+        setTasks(tasksResponse.data);
+        persistSession(token, profileResponse.data);
       } catch (error) {
         handleLogout();
       }
@@ -47,6 +68,7 @@ function App() {
     localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
     setToken(nextToken);
     setUser(nextUser);
+    setTheme(nextUser.themePreference || "dark");
   };
 
   const handleAuth = async (formData) => {
@@ -78,6 +100,25 @@ function App() {
     setTasks([]);
     setSelectedTask(null);
     setTaskError("");
+  };
+
+  const handleToggleTheme = async () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+
+    if (!token || !user) {
+      return;
+    }
+
+    try {
+      const { data } = await api.put("/auth/preferences/theme", {
+        themePreference: nextTheme,
+      });
+      persistSession(token, data);
+    } catch (error) {
+      setTheme(user.themePreference || "dark");
+      setTaskError(error.response?.data?.message || "Could not update theme");
+    }
   };
 
   const handleSaveTask = async (formData) => {
@@ -155,6 +196,8 @@ function App() {
         user={user}
         tasks={tasks}
         onLogout={handleLogout}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
         onSaveTask={handleSaveTask}
         onDeleteTask={handleDeleteTask}
         onEditTask={handleEditTask}
@@ -168,4 +211,3 @@ function App() {
 }
 
 export default App;
-

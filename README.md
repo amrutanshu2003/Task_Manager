@@ -27,7 +27,11 @@ Task_Manager/
 
 The backend is configured to use your MongoDB connection and the database path:
 
-`Task Manager`
+`TaskManager`
+
+Note:
+
+`Task Manager` with a space causes MongoDB namespace errors during collection creation, so the project uses `TaskManager` instead.
 
 Connection is stored in:
 

@@ -31,6 +31,7 @@ export const registerUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        themePreference: user.themePreference,
       },
     });
   } catch (error) {
@@ -62,6 +63,7 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        themePreference: user.themePreference,
       },
     });
   } catch (error) {
@@ -70,6 +72,35 @@ export const loginUser = async (req, res) => {
 };
 
 export const getProfile = async (req, res) => {
-  return res.status(200).json(req.user);
+  return res.status(200).json({
+    id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    themePreference: req.user.themePreference || "dark",
+  });
 };
 
+export const updateThemePreference = async (req, res) => {
+  try {
+    const { themePreference } = req.body;
+
+    if (!["dark", "light"].includes(themePreference)) {
+      return res.status(400).json({ message: "Invalid theme preference" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { themePreference },
+      { new: true }
+    ).select("-password");
+
+    return res.status(200).json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      themePreference: user.themePreference,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Could not update theme" });
+  }
+};

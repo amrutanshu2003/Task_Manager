@@ -15,7 +15,7 @@ function TaskForm({ onSave, selectedTask, onCancel, loading }) {
       setFormData({
         title: selectedTask.title,
         description: selectedTask.description || "",
-        dueDate: selectedTask.dueDate ? selectedTask.dueDate.slice(0, 10) : "",
+        dueDate: selectedTask.dueDate ? selectedTask.dueDate.slice(0, 16) : "",
         priority: selectedTask.priority || "medium",
       });
       return;
@@ -72,10 +72,10 @@ function TaskForm({ onSave, selectedTask, onCancel, loading }) {
 
       <div className="task-form-grid">
         <label>
-          <span>Due date</span>
+          <span>Due date and time</span>
           <input
             name="dueDate"
-            type="date"
+            type="datetime-local"
             value={formData.dueDate}
             onChange={handleChange}
           />
@@ -106,4 +106,3 @@ function TaskForm({ onSave, selectedTask, onCancel, loading }) {
 }
 
 export default TaskForm;
-

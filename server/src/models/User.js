@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    themePreference: {
+      type: String,
+      enum: ["dark", "light"],
+      default: "dark",
+    },
   },
   {
     timestamps: true,
@@ -28,4 +33,3 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 export default User;
-
