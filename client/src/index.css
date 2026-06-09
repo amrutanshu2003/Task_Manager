@@ -133,6 +133,22 @@ select option {
   color: var(--select-option-text);
 }
 
+:root[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+:root[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+:root[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+:root[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator,
+:root[data-theme="light"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+:root[data-theme="light"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
 .app-shell {
   min-height: 100vh;
   padding: 2rem;
